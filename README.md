@@ -245,7 +245,7 @@ export const rateLimitMiddleware = {
 
 ## License
 
-MIT © [Your Name]
+MIT © De Wibisana
 
 ---
 

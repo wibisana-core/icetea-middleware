@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from "next/server";
 
 export interface MiddlewareInstance {
-  route: (request: NextRequest) => boolean | boolean;
+  route: boolean | ((request: NextRequest) => boolean);
   executor: (
     request: NextRequest,
     response: NextResponse,

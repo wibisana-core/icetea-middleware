@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {ISignal, MiddlewareInstance} from "../types/common.types"
-import { Signal } from "./signal";
+import { Signal } from "../utils/signal";
 
 export class MiddlewareWrapper {
   private signal: ISignal;

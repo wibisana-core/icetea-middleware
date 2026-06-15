@@ -1,13 +1,19 @@
 import {NextRequest, NextResponse} from "next/server";
 
-export interface MiddlewareInstance {
-  route: boolean | ((request: NextRequest) => boolean);
-  executor: (
+export type MiddlewareExecutor = {
+  (
     request: NextRequest,
     response: NextResponse,
     signal: ISignal,
     wrapper: MiddlewareWrapperInstance
-  ) => Promise<NextResponse>;
+  ): Promise<NextResponse>;
+}
+
+export type MiddlewareRoute = boolean | ((request: NextRequest) => boolean);
+
+export interface MiddlewareInstance {
+  route: MiddlewareRoute;
+  executor: MiddlewareExecutor;
 }
 
 export interface ISignal {

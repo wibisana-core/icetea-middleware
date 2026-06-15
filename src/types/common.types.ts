@@ -24,5 +24,7 @@ export interface ISignal {
 export interface MiddlewareWrapperInstance {
   register(middlewares: MiddlewareInstance[]): MiddlewareWrapperInstance;
   execute(): Promise<NextResponse | null>;
-  redirect(url: string): NextResponse;
+  redirect(url: string | URL): NextResponse;
+  rewrite(url: string | URL): NextResponse;
+  switchResponse(newResponse: NextResponse, response: NextResponse): void;
 }

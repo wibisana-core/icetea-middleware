@@ -62,28 +62,24 @@ export class MiddlewareWrapper implements MiddlewareWrapperInstance {
 
   redirect(url: string): NextResponse {
     const redirectResponse = NextResponse.redirect(new URL(url, this.request.url));
-    MiddlewareWrapper.switchResponse(redirectResponse, this.response);
+    this.switchResponse(redirectResponse, this.response);
 
     return redirectResponse
   }
 
   rewrite(url: string): NextResponse {
     const rewriteResponse = NextResponse.rewrite(new URL(url, this.request.url));
-    MiddlewareWrapper.switchResponse(rewriteResponse, this.response);
+    this.switchResponse(rewriteResponse, this.response);
 
     return rewriteResponse
   }
-
-  static create(request: NextRequest): MiddlewareWrapper {
-    return new MiddlewareWrapper(request);
-  }
-
-  static switchResponse(newResponse: NextResponse, response: NextResponse) {
+  
+  switchResponse(newResponse: NextResponse, response: NextResponse) {
     // setHeaders from old response to new response
     for (const [key, value] of response.headers.entries()) {
       newResponse.headers.set(key, value);
     }
-
+    
     // setCookies from old response to new response
     response.cookies.getAll().forEach((cookie) => {
       newResponse.cookies.set(cookie.name, cookie.value, {
@@ -95,5 +91,9 @@ export class MiddlewareWrapper implements MiddlewareWrapperInstance {
         sameSite: cookie.sameSite,
       });
     });
+  }
+
+  static create(request: NextRequest): MiddlewareWrapper {
+    return new MiddlewareWrapper(request);
   }
 }

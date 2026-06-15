@@ -60,15 +60,15 @@ export class MiddlewareWrapper implements MiddlewareWrapperInstance {
     return this.response;
   }
 
-  redirect(url: string): NextResponse {
-    const redirectResponse = NextResponse.redirect(new URL(url, this.request.url));
+  redirect(url: string | URL): NextResponse {
+    const redirectResponse = NextResponse.redirect(url instanceof URL ? url : new URL(url, this.request.url));
     this.switchResponse(redirectResponse, this.response);
 
     return redirectResponse
   }
 
-  rewrite(url: string): NextResponse {
-    const rewriteResponse = NextResponse.rewrite(new URL(url, this.request.url));
+  rewrite(url: string | URL): NextResponse {
+    const rewriteResponse = NextResponse.rewrite(url instanceof URL ? url : new URL(url, this.request.url));
     this.switchResponse(rewriteResponse, this.response);
 
     return rewriteResponse

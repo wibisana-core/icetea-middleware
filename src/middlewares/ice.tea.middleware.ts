@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import {ISignal, MiddlewareInstance} from "../types/common.types"
+import {ISignal, MiddlewareInstance, MiddlewareWrapperInstance} from "../types/common.types"
 import { Signal } from "../utils/signal";
 
-export class MiddlewareWrapper {
+export class MiddlewareWrapper implements MiddlewareWrapperInstance {
   private signal: ISignal;
   private request: NextRequest;
   private response: NextResponse;
@@ -10,7 +10,7 @@ export class MiddlewareWrapper {
   private middlewares: MiddlewareInstance[];
   private tempResponse: NextResponse | null;
 
-  constructor(request: NextRequest) {
+  constructor(request: NextRequest){
     if (!request) throw new Error("Request is required");
 
     this.request = request;
@@ -20,10 +20,12 @@ export class MiddlewareWrapper {
     this.coreMiddleware = [];
     this.middlewares = [];
     this.tempResponse = null;
+
+    return this
   }
 
-  register(middlewares: MiddlewareInstance[]): void {
-    if (!Boolean(middlewares.length)) return;
+  register(middlewares: MiddlewareInstance[]): MiddlewareWrapperInstance {
+    if (!Boolean(middlewares.length)) return this;
 
     // filter core middleware
     this.coreMiddleware = middlewares?.filter(
@@ -34,6 +36,8 @@ export class MiddlewareWrapper {
     this.middlewares = middlewares?.filter(
       (midd) => typeof midd.route === "function" && midd.route(this.request),
     );
+
+    return this
   }
 
   async execute(): Promise<NextResponse | null> {
@@ -46,6 +50,7 @@ export class MiddlewareWrapper {
         this.request,
         this.tempResponse || this.response,
         this.signal,
+        this
       );
       if (this.signal.get()) break;
     }
@@ -53,6 +58,24 @@ export class MiddlewareWrapper {
     if (this.signal.get()) return this.tempResponse;
 
     return this.response;
+  }
+
+  redirect(url: string): NextResponse {
+    const redirectResponse = NextResponse.redirect(new URL(url, this.request.url));
+    MiddlewareWrapper.switchResponse(redirectResponse, this.response);
+
+    return redirectResponse
+  }
+
+  rewrite(url: string): NextResponse {
+    const rewriteResponse = NextResponse.rewrite(new URL(url, this.request.url));
+    MiddlewareWrapper.switchResponse(rewriteResponse, this.response);
+
+    return rewriteResponse
+  }
+
+  static create(request: NextRequest): MiddlewareWrapper {
+    return new MiddlewareWrapper(request);
   }
 
   static switchResponse(newResponse: NextResponse, response: NextResponse) {

@@ -6,10 +6,17 @@ export interface MiddlewareInstance {
     request: NextRequest,
     response: NextResponse,
     signal: ISignal,
+    wrapper: MiddlewareWrapperInstance
   ) => Promise<NextResponse>;
 }
 
 export interface ISignal {
   set(value: boolean): void;
   get(): boolean;
+}
+
+export interface MiddlewareWrapperInstance {
+  register(middlewares: MiddlewareInstance[]): MiddlewareWrapperInstance;
+  execute(): Promise<NextResponse | null>;
+  redirect(url: string): NextResponse;
 }

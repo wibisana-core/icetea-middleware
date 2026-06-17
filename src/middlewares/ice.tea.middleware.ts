@@ -89,15 +89,19 @@ export class MiddlewareWrapper implements MiddlewareWrapperInstance {
   }
 
   redirect(url: string | URL): NextResponse {
+    const currentResponse = this.tempResponse || this.response
+
     const redirectResponse = NextResponse.redirect(url instanceof URL ? url : new URL(url, this.request.url));
-    this.switchResponse(redirectResponse, this.response);
+    this.switchResponse(redirectResponse, currentResponse);
 
     return redirectResponse
   }
 
   rewrite(url: string | URL): NextResponse {
+    const currentResponse = this.tempResponse || this.response
+
     const rewriteResponse = NextResponse.rewrite(url instanceof URL ? url : new URL(url, this.request.url));
-    this.switchResponse(rewriteResponse, this.response);
+    this.switchResponse(rewriteResponse, currentResponse);
 
     return rewriteResponse
   }

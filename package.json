@@ -1,6 +1,6 @@
 {
   "name": "icetea-middleware",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "type": "module",
   "description": "A simple middleware for nextjs",
   "main": "./dist/index.umd.cjs",
